@@ -11,9 +11,9 @@ import {
   useNavigate,
 } from 'react-router-dom';
 import NoPageFound from './NoPageFound';
-import NewProject from './NewProject';
+import NewProject from './pages/new-project/NewProjectPage';
 import DashboardPage from './pages/dashboard/DashboardPage';
-import CommandEventDetailPage from './pages/commandEventDetail/CommandEventDetailPage';
+import CommandEventDetailPage from './pages/command-event-detail/CommandEventDetailPage';
 import Home from './Home';
 import { useMeQuery } from '@/graphql/types';
 import RemoteCachePage from './pages/remote-cache/RemoteCachePage';

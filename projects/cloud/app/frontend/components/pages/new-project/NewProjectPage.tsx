@@ -18,8 +18,11 @@ import {
   useMyAccountsQuery,
 } from '@/graphql/types';
 import { useNavigate } from 'react-router-dom';
+import { observer } from 'mobx-react-lite';
+import { useApolloClient } from '@apollo/client';
+import NewProjectPageStore from './NewProjectPageStore';
 
-const NewProject = () => {
+const NewProjectPage = observer(() => {
   const myAccounts = useMyAccountsQuery().data?.accounts ?? [];
   const options: SelectOption[] = myAccounts
     .map((account) => {
@@ -75,37 +78,16 @@ const NewProject = () => {
   );
 
   const navigate = useNavigate();
-  const [createProject] = useCreateProjectMutation({
-    onCompleted: ({ createProject }) => {
-      navigate(`/${createProject.slug}`);
-    },
-  });
+
+  const client = useApolloClient();
+  const [newProjectPageStore] = useState(
+    new NewProjectPageStore(client),
+  );
 
   const isCreateProjectButtonDisabled =
     projectName.length === 0 ||
     selectedProjectOwner === undefined ||
     (isCreatingOrganization && organizationName.length === 0);
-
-  const handleCreateProjectButtonTapped = useCallback(() => {
-    createProject({
-      variables: {
-        input: {
-          accountId: isCreatingOrganization
-            ? null
-            : selectedProjectOwner!,
-          name: projectName,
-          organizationName: isCreatingOrganization
-            ? organizationName
-            : null,
-        },
-      },
-    });
-  }, [
-    isCreatingOrganization,
-    selectedProjectOwner,
-    organizationName,
-    projectName,
-  ]);
 
   return (
     <Page title="New Project">
@@ -139,7 +121,15 @@ const NewProject = () => {
               <Button
                 primary
                 disabled={isCreateProjectButtonDisabled}
-                onClick={handleCreateProjectButtonTapped}
+                onClick={() => {
+                  newProjectPageStore.createProject(
+                    isCreatingOrganization,
+                    selectedProjectOwner,
+                    projectName,
+                    organizationName,
+                    (projectSlug) => navigate(`/${projectSlug}`),
+                  );
+                }}
               >
                 Create project
               </Button>
@@ -157,6 +147,6 @@ const NewProject = () => {
       </Layout>
     </Page>
   );
-};
+});
 
-export default NewProject;
+export default NewProjectPage;

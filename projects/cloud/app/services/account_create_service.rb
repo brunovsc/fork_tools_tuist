@@ -17,10 +17,16 @@ class AccountCreateService < ApplicationService
   end
 
   def call
-    Account.create!(
-      name: account_name,
-      owner: owner
-    )
+    puts "create"
+    begin
+      Account.create!(
+        name: account_name,
+        owner: owner
+      )
+    rescue ActiveRecord::RecordInvalid => invalid
+      puts "ola!"
+      puts invalid.record.errors.full_messages
+    end
   end
 
   private

@@ -7,5 +7,5 @@ class Account < ApplicationRecord
   has_many :s3_buckets, class_name: "S3Bucket", dependent: :destroy
 
   # Validations
-  validates :name, exclusion: Defaults.fetch(:blocklisted_slug_keywords)
+  validates :name, exclusion: Defaults.fetch(:blocklisted_slug_keywords), format: { with: /\A[a-zA-Z0-9\-]+\z/ }
 end
